@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Rustic Music</h1>
+    <rm-header></rm-header>
     <section>
       <nav>
         <div>
@@ -13,33 +13,37 @@
         <div>
           <button @click="searchTrack">Buscar</button>
           <button @click="cancelDeleteSearch">x</button>
-          <p v-if="coincidenceTrack">{{ searchMessage }}</p>
+          <p v-if="tracks.length">{{ searchMessage }}</p>
         </div>
       </nav>
       <div>
-        <table v-if="tracksFiltered.length > 0">
+        <table v-if="tracks.length">
           <tr>
             <th>Artista</th>
             <th>Canción</th>
           </tr>
-          <tr v-for="track in tracksFiltered" :key="track.name">
-            <td>{{ track.artist }}</td>
+          <tr v-for="track in tracks" :key="track.name">
+            <td>{{ track.artists[0].name }}</td>
             <td>{{ track.name }}</td>
           </tr>
         </table>
       </div>
     </section>
+    <rm-footer></rm-footer>
   </div>
 </template>
 
 <script>
-const tracks = [
-  { name: "muchacha", artist: "spinetta" },
-  { name: "aca en el baile", artist: "el pepo" },
-  { name: "i was made for loving you", artist: "kiss" }
-];
+import trackService from "./services/track.js";
+import RmFooter from "./components/layout/RmFooter.vue";
+import RmHeader from "./components/layout/RmHeader.vue";
+
 export default {
   name: "App",
+  components: {
+    RmFooter,
+    RmHeader
+  },
   data() {
     return {
       searchQuery: "",
@@ -48,29 +52,21 @@ export default {
   },
   computed: {
     searchMessage() {
-      return `${this.tracksFiltered.length} ${
-        this.tracksFiltered.length === 1
+      return `${this.tracks.length} ${
+        this.tracks.length === 1
           ? "resultado encontrado"
           : "resultados encontrados"
       }`;
-    },
-    tracksFiltered() {
-      if (this.searchQuery === "") {
-        return false;
-      }
-      return this.tracks.filter(
-        track =>
-          track.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          track.artist.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    },
-    coincidenceTrack() {
-      return this.searchQuery != "" && this.tracks.length > 0 ? true : false;
     }
   },
   methods: {
     searchTrack() {
-      this.tracks = tracks;
+      if (!this.searchQuery) {
+        return;
+      }
+      trackService.search(this.searchQuery).then(res => {
+        this.tracks = res.tracks.items;
+      });
     },
     cancelDeleteSearch() {
       this.tracks = [];
