@@ -1,14 +1,15 @@
-import rusticMusicService from "./rustic-music";
+async function getTracks(searchQuery, typeSearch) {
+  const apiUrl = "https://platzi-music-api.herokuapp.com";
+  const response = await fetch(
+    `${apiUrl}/search?q=${searchQuery}&type=${typeSearch}`
+  );
+  if (!response.ok) {
+    console.log(response.status);
+    return false;
+  } else {
+    const data = await response.json();
+    return data.tracks.items;
+  }
+}
 
-const trackService = {};
-
-trackService.search = function(query) {
-  const type = "track";
-  return rusticMusicService
-    .get("/search", {
-      params: { query, type },
-    })
-    .then((res) => res.data);
-};
-
-export default trackService;
+export default getTracks;
