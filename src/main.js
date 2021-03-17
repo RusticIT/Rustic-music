@@ -2,6 +2,9 @@ import Vue from "vue";
 import App from "./App.vue";
 import "tailwindcss/tailwind.css";
 import timeFilter from "./services/filters";
+import { VueSpinners } from "@saeris/vue-spinners";
+
+Vue.use(VueSpinners);
 
 Vue.filter("timeFilter", timeFilter);
 

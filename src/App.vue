@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import RmFooter from "./components/RmFooter.vue";
-import RmHeader from "./components/RmHeader.vue";
-import RmSearch from "./components/RmSearch.vue";
+import RmFooter from "./components/RmFooter";
+import RmHeader from "./components/RmHeader";
+import RmSearch from "./components/RmSearch";
 
 export default {
   name: "App",

@@ -8,24 +8,23 @@
           placeholder="Buscar canción o artista"
           v-model="searchQuery"
         />
-        <button class="px-2 rounded bg-green-400" @click="searchTrack">
+        <button class="px-2 mx-1 rounded bg-green-400" @click="searchTrack">
           Buscar
         </button>
         <button class="px-2 rounded bg-red-400" @click="cancelDeleteSearch">
           X
         </button>
       </div>
-      <p v-if="tracks.length">{{ searchMessage }}</p>
+      <p>{{ tracksFound }}</p>
+      <p class="text-center my-1" v-if="noSearchQuery">{{ noSearchQuery }}</p>
+      <bounce-loader
+        v-if="isLoading"
+        class="m-auto my-14"
+        color="#9D174D"
+      ></bounce-loader>
       <div v-if="tracks.length" class="grid grid-cols-5">
-        <div
-          v-for="track in tracks"
-          :key="track.id"
-          class="bg-gray-600 m-4 hover:bg-pink-800 flex flex-col"
-        >
-          <img :src="track.album.images[1].url" alt="" />
-          <span class="px-1">{{ track.artists[0].name }}</span>
-          <span class="px-1">{{ track.name }}</span>
-          <span class="px-1">{{ track.duration_ms | timeFilter }}</span>
+        <div v-for="track in tracks" :key="track.id">
+          <rm-track :track="track"></rm-track>
         </div>
       </div>
     </div>
@@ -33,17 +32,24 @@
 </template>
 
 <script>
-import getTracks from "../services/track.js";
+import getTracks from "../services/searchService";
+import RmTrack from "./RmTrack";
+
 export default {
   data() {
     return {
+      isLoading: false,
       searchQuery: "",
       tracks: [],
-      type: "track"
+      type: "track",
+      noSearchQuery: ""
     };
   },
+  components: {
+    RmTrack
+  },
   computed: {
-    searchMessage() {
+    tracksFound() {
       return `${this.tracks.length} ${
         this.tracks.length === 1
           ? "resultado encontrado"
@@ -54,10 +60,12 @@ export default {
   methods: {
     async searchTrack() {
       if (!this.searchQuery) {
-        return;
+        return (this.noSearchQuery = "Ingrese una busqueda");
       }
-
+      this.noSearchQuery = "";
+      this.isLoading = true;
       this.tracks = await getTracks(this.searchQuery, this.type);
+      this.isLoading = false;
     },
     cancelDeleteSearch() {
       this.tracks = [];
