@@ -15,8 +15,12 @@
           X
         </button>
       </div>
-      <p>{{ tracksFound }}</p>
-      <p class="text-center my-1" v-if="noSearchQuery">{{ noSearchQuery }}</p>
+      <div class="flex justify-center">
+        <p v-if="searchFound">{{ tracksFound }}</p>
+        <p class="text-center my-1" v-if="noSearchQuery">
+          Ingrese una búsqueda
+        </p>
+      </div>
       <bounce-loader
         v-if="isLoading"
         class="m-auto my-14"
@@ -42,7 +46,8 @@ export default {
       searchQuery: "",
       tracks: [],
       type: "track",
-      noSearchQuery: ""
+      noSearchQuery: false,
+      searchFound: false
     };
   },
   components: {
@@ -60,16 +65,20 @@ export default {
   methods: {
     async searchTrack() {
       if (!this.searchQuery) {
-        return (this.noSearchQuery = "Ingrese una busqueda");
+        return (this.noSearchQuery = true);
       }
-      this.noSearchQuery = "";
+      this.searchFound = false;
+      this.noSearchQuery = false;
       this.isLoading = true;
       this.tracks = await getTracks(this.searchQuery, this.type);
       this.isLoading = false;
+      this.searchFound = true;
     },
     cancelDeleteSearch() {
       this.tracks = [];
       this.searchQuery = "";
+      this.noSearchQuery = "";
+      this.searchFound = false;
     }
   }
 };

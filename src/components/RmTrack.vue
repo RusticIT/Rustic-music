@@ -6,8 +6,20 @@
       <span>{{ track.title_short }}</span>
       <div class="flex">
         <span class="flex-1">{{ track.duration | timeFilter }}</span>
-        <img class="h-5 flex-1" src="../assets/play-button.svg" />
+        <img
+          v-if="play"
+          @click="playPause"
+          class="h-5 flex-1"
+          src="../assets/pause.svg"
+        />
+        <img
+          v-else
+          @click="playPause"
+          class="h-5 flex-1"
+          src="../assets/play.svg"
+        />
       </div>
+      <audio ref="audioTrack" :src="track.preview"></audio>
     </div>
   </div>
 </template>
@@ -16,6 +28,21 @@
 export default {
   props: {
     track: { type: Object, required: true }
+  },
+  data() {
+    return {
+      play: false
+    };
+  },
+  methods: {
+    playPause() {
+      this.play = !this.play;
+      if (this.play) {
+        this.$refs.audioTrack.play();
+      } else {
+        this.$refs.audioTrack.pause();
+      }
+    }
   }
 };
 </script>
