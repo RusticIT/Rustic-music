@@ -31,12 +31,24 @@
           <rm-track :track="track"></rm-track>
         </div>
       </div>
+      <div v-if="!noSearchQuery && !searchFound">
+        <p
+          class="text-center text-3xl text-white bg-green-500 w-1/5 p-2 rounded-full m-auto my-2"
+        >
+          Los más populares!
+        </p>
+        <div class="grid grid-cols-5">
+          <div v-for="chartTrack in chartTracks" :key="chartTrack.track.id">
+            <rm-track :track="chartTrack.track"></rm-track>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
-import getTracks from "../services/searchService";
+import { getTracks, getChartsTracks } from "../services/searchService";
 import RmTrack from "./RmTrack";
 
 export default {
@@ -44,11 +56,15 @@ export default {
     return {
       isLoading: false,
       searchQuery: "",
+      chartTracks: [],
       tracks: [],
       type: "track",
       noSearchQuery: false,
       searchFound: false
     };
+  },
+  async created() {
+    this.chartTracks = await getChartsTracks();
   },
   components: {
     RmTrack
@@ -67,17 +83,17 @@ export default {
       if (!this.searchQuery) {
         return (this.noSearchQuery = true);
       }
-      this.searchFound = false;
-      this.noSearchQuery = false;
       this.isLoading = true;
       this.tracks = await getTracks(this.searchQuery, this.type);
+      this.searchFound = false;
+      this.noSearchQuery = false;
       this.isLoading = false;
       this.searchFound = true;
     },
     cancelDeleteSearch() {
       this.tracks = [];
       this.searchQuery = "";
-      this.noSearchQuery = "";
+      this.noSearchQuery = false;
       this.searchFound = false;
     }
   }

@@ -8,7 +8,7 @@
     </div>
     <div class="flex">
       <span>Powered by</span>
-      <img class="h-10" src="../assets/deezerLogo.svg" alt="" />
+      <img class="h-14" src="../assets/spotifyLogo.png" alt="" />
     </div>
   </footer>
 </template>
